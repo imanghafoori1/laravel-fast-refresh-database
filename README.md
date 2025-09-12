@@ -11,23 +11,35 @@ composer require imanghafoori/laravel-fast-refresh-database --dev
 ```
 
 
-### Usage:
-You should only use the trait in your test class:
+### Usage
+Add the trait to your test class and call the setup method in `setUp()` so the package can start logging insert queries and truncate only the touched tables after each test:
 
 ```php
+use Imanghafoori\DatabaseFresh\FastRefreshDatabase;
+
 class MyTest extends TestCase
 {
     use FastRefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Start watching inserts for this test process
+        $this->setupDatabaseAndStartWatchingTables();
+    }
+
     public function test_user_can_run()
     {
-    
+        // ... your test code
     }
-} 
+}
 
 ```
 
-That's it.
+Tip: Put the trait and the `setUp()` call into your base `Tests\\TestCase` to enable it for all tests.
+
+Note: An automatic hook may be added in a future update so you won't need to call the setup method manually.
 
 You may also check my other package as well:
 
