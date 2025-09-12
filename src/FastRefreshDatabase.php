@@ -11,9 +11,11 @@ trait FastRefreshDatabase
     use CanConfigureMigrationCommands;
 
     /**
-     * Truncate the database tables for all configured connections.
+     * PHPUnit hook to start watching insert queries before each test.
+     *
+     * @before
      */
-    protected function setupDatabaseAndStartWatchingTables(): void
+    public function setupDatabaseAndStartWatchingTables(): void
     {
         $database = $this->app->make('db');
         collect($this->connectionsToUnseed())->each(
