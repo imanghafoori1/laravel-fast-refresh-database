@@ -12,7 +12,7 @@ composer require imanghafoori/laravel-fast-refresh-database --dev
 
 
 ### Usage
-Add the trait to your test class and call the setup method in `setUp()` so the package can start logging insert queries and truncate only the touched tables after each test:
+Add the trait to your test class. The package automatically starts watching insert queries before each test (via a PHPUnit `@before` hook) and truncates only the tables that were touched after each test:
 
 ```php
 use Imanghafoori\DatabaseFresh\FastRefreshDatabase;
@@ -20,14 +20,6 @@ use Imanghafoori\DatabaseFresh\FastRefreshDatabase;
 class MyTest extends TestCase
 {
     use FastRefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // Start watching inserts for this test process
-        $this->setupDatabaseAndStartWatchingTables();
-    }
 
     public function test_user_can_run()
     {
@@ -37,9 +29,22 @@ class MyTest extends TestCase
 
 ```
 
-Tip: Put the trait and the `setUp()` call into your base `Tests\\TestCase` to enable it for all tests.
+Tip: Put the trait on your base `Tests\\TestCase` to enable it for all tests.
 
-Note: An automatic hook may be added in a future update so you won't need to call the setup method manually.
+### Manual setup (legacy PHPUnit)
+If your PHPUnit version does not support `@before`, you can still invoke the setup helper in `setUp()`:
+
+```php
+protected function setUp(): void
+{
+    parent::setUp();
+
+    // Manually start watching inserts for this test process
+    $this->setupDatabaseAndStartWatchingTables();
+}
+```
+
+
 
 You may also check my other package as well:
 
