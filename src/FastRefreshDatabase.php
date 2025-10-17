@@ -42,9 +42,9 @@ trait FastRefreshDatabase
             ->each(function ($name) use ($database) {
                 $connection = $database->connection($name);
 
-                $connection->getSchemaBuilder()->disableForeignKeyConstraints();
-                $this->unseedTablesForConnection($connection, $name);
-                $connection->getSchemaBuilder()->enableForeignKeyConstraints();
+                $connection->getSchemaBuilder()->withoutForeignKeyConstraints(
+                    fn () => $this->unseedTablesForConnection($connection, $name)
+                );
             });
     }
 
