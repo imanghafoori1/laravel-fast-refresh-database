@@ -17,6 +17,8 @@ trait FastRefreshDatabase
      */
     public function setupDatabaseAndStartWatchingTables(): void
     {
+        $this->beforeFastRefreshDatabase();
+
         $database = $this->app->make('db');
         collect($this->connectionsToUnseed())->each(
             fn ($name) => $database->connection($name)->enableQueryLog()
@@ -25,6 +27,8 @@ trait FastRefreshDatabase
         $this->beforeApplicationDestroyed(function () {
             $this->unseedTablesForAllConnections();
         });
+
+        $this->afterFastRefreshDatabase();
     }
 
     /**
@@ -38,9 +42,9 @@ trait FastRefreshDatabase
             ->each(function ($name) use ($database) {
                 $connection = $database->connection($name);
 
-                $connection->getSchemaBuilder()->disableForeignKeyConstraints();
-                $this->unseedTablesForConnection($connection, $name);
-                $connection->getSchemaBuilder()->enableForeignKeyConstraints();
+                $connection->getSchemaBuilder()->withoutForeignKeyConstraints(
+                    fn () => $this->unseedTablesForConnection($connection, $name)
+                );
             });
     }
 
@@ -105,5 +109,26 @@ trait FastRefreshDatabase
     {
         return property_exists($this, 'connectionsToUnseed')
             ? $this->connectionsToUnseed : [null];
+    }
+
+
+    /**
+     * Perform any work that should take place before the database has started refreshing.
+     *
+     * @return void
+     */
+    protected function beforeFastRefreshDatabase(): void
+    {
+        //
+    }
+
+    /**
+     * Perform any work that should take place once the database has finished refresh.
+     *
+     * @return void
+     */
+    protected function afterFastRefreshDatabase(): void
+    {
+        //
     }
 }
