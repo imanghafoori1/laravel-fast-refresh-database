@@ -11,11 +11,9 @@ trait FastRefreshDatabase
     use CanConfigureMigrationCommands;
 
     /**
-     * PHPUnit hook to start watching insert queries before each test.
-     *
-     * @before
+     * Start watching insert queries before each test.
      */
-    public function setupDatabaseAndStartWatchingTables(): void
+    public function setUpFastRefreshDatabase(): void
     {
         $this->beforeFastRefreshDatabase();
 
@@ -110,7 +108,6 @@ trait FastRefreshDatabase
         return property_exists($this, 'connectionsToUnseed')
             ? $this->connectionsToUnseed : [null];
     }
-
 
     /**
      * Perform any work that should take place before the database has started refreshing.
